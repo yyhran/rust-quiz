@@ -1,43 +1,44 @@
 import 'package:flutter/material.dart';
 
 class QuizDropdown extends StatefulWidget {
+  final String? selectedValue;
+  final ValueChanged<String?> onChanged;
+  final List<String> options;
+
+  const QuizDropdown({
+    Key? key,
+    required this.selectedValue,
+    required this.onChanged,
+    this.options = const [
+      'The program exhibits undefined behavior',
+      'The program does not compile',
+      'The program is guaranteed to output:'
+    ],
+  }) : super(key: key);
+
   @override
   _QuizDropdownState createState() => _QuizDropdownState();
 }
 
 class _QuizDropdownState extends State<QuizDropdown> {
-  String? _selectedValue;
-  final List<String> _options = [
-    'The program exhibits undefined behavior',
-    'The program does not compile',
-    'The program is guaranteed to output:' // 第三个选项
-  ];
-
-  @override
-  void initState() {
-    super.initState();
-    // 默认选中第三个选项（索引从0开始）
-    _selectedValue = _options[2];
-  }
-
   @override
   Widget build(BuildContext context) {
     return Container(
       color: Color.fromARGB(255, 50, 50, 50),
-      padding: EdgeInsets.symmetric(horizontal: 16),
+      // padding: EdgeInsets.symmetric(horizontal: 2),
+      padding:
+          const EdgeInsets.only(top: 4.0, bottom: 4.0, left: 4.0, right: 16.0),
       child: DropdownButtonHideUnderline(
         child: DropdownButton<String>(
-          isExpanded: true,
-          value: _selectedValue, // 自动显示第三个选项
-          items: _options.map((String value) {
+          // isExpanded: true,
+          value: widget.selectedValue, // 使用父组件传入的值
+          items: widget.options.map((String value) {
             return DropdownMenuItem<String>(
               value: value,
               child: Text(value),
             );
           }).toList(),
-          onChanged: (String? newValue) {
-            setState(() => _selectedValue = newValue);
-          },
+          onChanged: widget.onChanged,
         ),
       ),
     );
