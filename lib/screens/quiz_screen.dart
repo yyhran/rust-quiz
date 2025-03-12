@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'dart:math';
 
 import '../data/questions.dart';
 import '../widgets/code_editor.dart';
@@ -27,6 +28,7 @@ class QuizScreenState extends State<QuizScreen> {
   String? _selectedOption;
   String _correctAnswer = "1";
   Question _question = sampleQuestions[0] as Question;
+  final random = Random();
 
   final TextEditingController _controller = TextEditingController();
 
@@ -90,7 +92,7 @@ class QuizScreenState extends State<QuizScreen> {
 
   void _showExplanation() async {
     // 跳转到 ExplanationScreen，并等待返回的新题目
-    final newQuestion = await Navigator.push<Question>(
+    final newQuestion = await Navigator.push<int>(
       context,
       MaterialPageRoute(
         builder: (context) => ExplanationScreen(question: this._question),
@@ -99,7 +101,7 @@ class QuizScreenState extends State<QuizScreen> {
     // 如果有返回值，则更新题目
     if (newQuestion != null) {
       setState(() {
-        this._question = newQuestion;
+        this._question = sampleQuestions[newQuestion];
         _giveUpCount = 3;
         _controller.clear();
         FocusScope.of(context).unfocus();
@@ -123,7 +125,10 @@ class QuizScreenState extends State<QuizScreen> {
   @override
   Widget build(BuildContext context) {
     // final question = sampleQuestions[_currentQuestionIndex];
+    _currentQuestionIndex = random.nextInt(36);
+    this._question = sampleQuestions[_currentQuestionIndex];
     final question = this._question;
+
     _correctAnswer = question.answer;
 
     return Scaffold(
@@ -131,7 +136,7 @@ class QuizScreenState extends State<QuizScreen> {
         children: [
           // 代码编辑器
           Container(
-            color: Colors.blue,
+            // color: Colors.blue,
             width: double.infinity,
             padding: EdgeInsets.all(4),
             child: RustCodeView(code: question.codeSnippet),
@@ -139,7 +144,7 @@ class QuizScreenState extends State<QuizScreen> {
           SizedBox(height: 8),
           // 选项
           Container(
-            color: Colors.green,
+            // color: Colors.green,
             width: double.infinity,
             padding: EdgeInsets.all(8),
             child: QuizDropdown(
@@ -155,7 +160,7 @@ class QuizScreenState extends State<QuizScreen> {
 
           // 输入
           Container(
-            color: Colors.red,
+            // color: Colors.red,
             width: double.infinity,
             // padding: EdgeInsets.all(16),
             padding: const EdgeInsets.only(top: 4.0, bottom: 4.0, left: 8.0),
@@ -197,7 +202,7 @@ class QuizScreenState extends State<QuizScreen> {
           SizedBox(height: 8),
           // 操作按钮
           Container(
-              color: Colors.blue,
+              // color: Colors.blue,
               width: double.infinity,
               padding: EdgeInsets.all(4),
               child: Row(
@@ -205,7 +210,9 @@ class QuizScreenState extends State<QuizScreen> {
                 children: [
                   ElevatedButton(
                     onPressed: () {
-                      // SKIP 按钮的点击逻辑
+                      setState(() {
+                        _question = sampleQuestions[random.nextInt(36)];
+                      });
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Color.fromARGB(255, 50, 50, 50),

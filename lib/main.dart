@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart'; // 用于 ChangeNotifier
 import 'package:shared_preferences/shared_preferences.dart';
 
+import 'data/questions.dart';
 import 'models/question.dart';
 import 'screens/quiz_screen.dart';
 import 'widgets/code_editor.dart';
@@ -38,7 +39,7 @@ void main() async {
 
   // 如果有需要可以在这里初始化其他服务（如 Hive）
   // await Hive.initFlutter();
-
+  await initializeQuestions(); // 加载题目数据
   runApp(
     ChangeNotifierProvider(
       create: (context) => AppState()..loadThemePreference(),

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
@@ -11,46 +13,9 @@ class ExplanationScreen extends StatelessWidget {
   const ExplanationScreen({Key? key, required this.question}) : super(key: key);
 
   // 模拟获取新问题的异步方法
-  Future<Question> _fetchNewQuestion() async {
-    // 这里是本地题库示例，你可以将其替换为实际的数据源
-    final List<Question> localQuestions = [
-      Question(
-        id: 'q1',
-        title: 'Question 1',
-        codeSnippet: 'fn main() { println!("Question 1"); }',
-        currentIndex: 0,
-        answer: 'Answer 1',
-        explanation: 'Explanation for **Question 1** in Markdown.',
-        hint: 'Hint for Question 1',
-      ),
-      Question(
-        id: 'q2',
-        title: 'Question 2',
-        codeSnippet: 'fn main() { println!("Question 2"); }',
-        currentIndex: 1,
-        answer: 'Answer 2',
-        explanation: 'Explanation for **Question 2** in Markdown.',
-        hint: 'Hint for Question 2',
-      ),
-      Question(
-        id: 'q3',
-        title: 'Question 3',
-        codeSnippet: 'fn main() { println!("Question 3"); }',
-        currentIndex: 2,
-        answer: 'Answer 3',
-        explanation: 'Explanation for **Question 3** in Markdown.',
-        hint: 'Hint for Question 3',
-      ),
-    ];
-
-    // 查找当前题目的索引
-    int currentIndex = localQuestions.indexWhere((q) => q.id == question.id);
-    // 计算下一个题目的索引
-    int nextIndex = currentIndex + 1;
-    if (nextIndex >= localQuestions.length) {
-      nextIndex = 0; // 若到最后，则从头开始
-    }
-    return localQuestions[nextIndex];
+  Future<int> _fetchNewQuestion() async {
+    final random = Random();
+    return random.nextInt(36);
   }
 
   @override
