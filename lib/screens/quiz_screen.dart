@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:math';
 
 import '../data/questions.dart';
@@ -30,6 +31,9 @@ class QuizScreenState extends State<QuizScreen> {
   Question _question = sampleQuestions[0] as Question;
   final random = Random();
 
+  final Set<int> completedIndices = {};
+  late List<int> notCompletedIndices;
+
   final TextEditingController _controller = TextEditingController();
 
   // 当用户点击圆形按钮时调用
@@ -48,7 +52,9 @@ class QuizScreenState extends State<QuizScreen> {
     } else {
       // 答案错误，弹出提示
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("答案错误")),
+        SnackBar(
+            content: Text("答案错误"), duration: Duration(seconds: 1) // 设置显示时间为2秒
+            ),
       );
       if (_giveUpCount > 0) {
         setState(() {
@@ -101,12 +107,60 @@ class QuizScreenState extends State<QuizScreen> {
     // 如果有返回值，则更新题目
     if (newQuestion != null) {
       setState(() {
-        this._question = sampleQuestions[newQuestion];
+        // 标记当前题目已完成
+        completedIndices.add(_currentQuestionIndex);
+        notCompletedIndices.remove(_currentQuestionIndex);
+        // 更新当前题目
+        _currentQuestionIndex = _pickRandomQuestionIndex();
+        _saveProgress(); // 保存进度
+
+        this._currentQuestionIndex = newQuestion;
         _giveUpCount = 3;
         _controller.clear();
+        _showHint = false;
         FocusScope.of(context).unfocus();
       });
     }
+  }
+
+  // 从未完成的题目中随机选取一个题目索引
+  int _pickRandomQuestionIndex() {
+    if (notCompletedIndices.isEmpty) {
+      // 如果所有题目都已完成，则重置进度
+      notCompletedIndices =
+          List.generate(sampleQuestions.length, (index) => index);
+      completedIndices.clear();
+    }
+    int randomIndex = random.nextInt(notCompletedIndices.length);
+    return notCompletedIndices[randomIndex];
+  }
+
+  // 保存进度到 SharedPreferences
+  Future<void> _saveProgress() async {
+    final prefs = await SharedPreferences.getInstance();
+    // 将 completedIndices 保存为字符串列表
+    await prefs.setStringList(
+      'completedIndices',
+      completedIndices.map((e) => e.toString()).toList(),
+    );
+    await prefs.setInt('currentQuestionIndex', _currentQuestionIndex);
+  }
+
+  // 从 SharedPreferences 加载进度
+  Future<void> _loadProgress() async {
+    final prefs = await SharedPreferences.getInstance();
+    final completedList = prefs.getStringList('completedIndices') ?? [];
+    completedIndices.clear();
+    completedIndices.addAll(completedList
+        .map((e) => int.tryParse(e) ?? -1)
+        .where((element) => element != -1));
+    _currentQuestionIndex =
+        prefs.getInt('currentQuestionIndex') ?? _pickRandomQuestionIndex();
+    // 计算未完成的题目索引
+    notCompletedIndices =
+        List.generate(sampleQuestions.length, (index) => index)
+            .where((index) => !completedIndices.contains(index))
+            .toList();
   }
 
   @override
@@ -114,6 +168,13 @@ class QuizScreenState extends State<QuizScreen> {
     super.initState();
     // 默认选中第三个选项（索引从0开始）
     _selectedOption = _options[2];
+    // _currentQuestionIndex = random.nextInt(36);
+    notCompletedIndices =
+        List.generate(sampleQuestions.length, (index) => index);
+    if (!notCompletedIndices.contains(_currentQuestionIndex)) {
+      _currentQuestionIndex = _pickRandomQuestionIndex();
+    }
+    setState(() {});
   }
 
   @override
@@ -124,14 +185,25 @@ class QuizScreenState extends State<QuizScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // 如果进度未加载好，则显示加载指示器
+    if (sampleQuestions.isEmpty || notCompletedIndices.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(title: const Text("Quiz")),
+        body: const Center(child: CircularProgressIndicator()),
+      );
+    }
     // final question = sampleQuestions[_currentQuestionIndex];
-    _currentQuestionIndex = random.nextInt(36);
     this._question = sampleQuestions[_currentQuestionIndex];
     final question = this._question;
 
     _correctAnswer = question.answer;
 
     return Scaffold(
+      appBar: AppBar(
+        // 进度显示 (已完成 / 总数)
+        title:
+            Text("进度 (${completedIndices.length}/${sampleQuestions.length})"),
+      ),
       body: ListView(
         children: [
           // 代码编辑器
@@ -211,7 +283,12 @@ class QuizScreenState extends State<QuizScreen> {
                   ElevatedButton(
                     onPressed: () {
                       setState(() {
-                        _question = sampleQuestions[random.nextInt(36)];
+                        _currentQuestionIndex = _pickRandomQuestionIndex();
+                        _saveProgress(); // 同样保存当前题目索引
+                        _giveUpCount = 3;
+                        _controller.clear();
+                        _showHint = false;
+                        FocusScope.of(context).unfocus();
                       });
                     },
                     style: ElevatedButton.styleFrom(
