@@ -39,7 +39,9 @@ void main() async {
 
   // 如果有需要可以在这里初始化其他服务（如 Hive）
   // await Hive.initFlutter();
-  await initializeQuestions(); // 加载题目数据
+
+  await QuestionManager().initializeQuestions(); // 加载题目数据
+
   runApp(
     ChangeNotifierProvider(
       create: (context) => AppState()..loadThemePreference(),
@@ -78,7 +80,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
           themeMode: appState.themeMode,
-          home: const QuizHomePage(),
+          home: const QuizHome(),
         );
       },
     );
@@ -86,14 +88,24 @@ class MyApp extends StatelessWidget {
 }
 
 // 主页导航框架
-class QuizHomePage extends StatelessWidget {
-  const QuizHomePage({super.key});
+// class QuizHomePage extends StatelessWidget {
+class QuizHome extends StatefulWidget {
+  const QuizHome({super.key});
+
+  @override
+  QuizHomePage createState() => QuizHomePage();
+}
+
+class QuizHomePage extends State<QuizHome> {
+  // const QuizHomePage({super.key});
+  final qm = QuestionManager();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('RustQuiz'),
+        title:
+            Text('RustQuiz (${qm.completed.length}/${qm.notCompleted.length})'),
         actions: [
           IconButton(
             icon: Icon(

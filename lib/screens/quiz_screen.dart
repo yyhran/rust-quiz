@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:math';
 
 import '../data/questions.dart';
 import '../widgets/code_editor.dart';
@@ -18,23 +17,16 @@ class QuizScreen extends StatefulWidget {
 }
 
 class QuizScreenState extends State<QuizScreen> {
-  int _currentQuestionIndex = 0;
   bool _showHint = false;
   int _giveUpCount = 3;
+  String? _selectedOption;
+  var _qm = QuestionManager();
+  final TextEditingController _controller = TextEditingController();
   final List<String> _options = [
     'The program exhibits undefined behavior',
     'The program does not compile',
     'The program is guaranteed to output:'
   ];
-  String? _selectedOption;
-  String _correctAnswer = "1";
-  Question _question = sampleQuestions[0] as Question;
-  final random = Random();
-
-  final Set<int> completedIndices = {};
-  late List<int> notCompletedIndices;
-
-  final TextEditingController _controller = TextEditingController();
 
   // 当用户点击圆形按钮时调用
   void _submitOption() {
@@ -45,7 +37,7 @@ class QuizScreenState extends State<QuizScreen> {
 
     print("userAnster: $userAnswer");
     if (userAnswer.trim().toLowerCase() ==
-        _correctAnswer.trim().toLowerCase()) {
+        _qm.getQuestion().answer.trim().toLowerCase()) {
       // 答案正确，跳转到下一个页面（这里仅做示例，实际可根据需求实现）
       // Navigator.push(context, MaterialPageRoute(builder: (context) => NextPage()));
       _showExplanation();
@@ -101,20 +93,14 @@ class QuizScreenState extends State<QuizScreen> {
     final newQuestion = await Navigator.push<int>(
       context,
       MaterialPageRoute(
-        builder: (context) => ExplanationScreen(question: this._question),
+        builder: (context) => ExplanationScreen(question: _qm.getQuestion()),
       ),
     );
     // 如果有返回值，则更新题目
     if (newQuestion != null) {
       setState(() {
-        // 标记当前题目已完成
-        completedIndices.add(_currentQuestionIndex);
-        notCompletedIndices.remove(_currentQuestionIndex);
-        // 更新当前题目
-        _currentQuestionIndex = _pickRandomQuestionIndex();
-        _saveProgress(); // 保存进度
+        _qm.nextQuestion();
 
-        this._currentQuestionIndex = newQuestion;
         _giveUpCount = 3;
         _controller.clear();
         _showHint = false;
@@ -123,57 +109,12 @@ class QuizScreenState extends State<QuizScreen> {
     }
   }
 
-  // 从未完成的题目中随机选取一个题目索引
-  int _pickRandomQuestionIndex() {
-    if (notCompletedIndices.isEmpty) {
-      // 如果所有题目都已完成，则重置进度
-      notCompletedIndices =
-          List.generate(sampleQuestions.length, (index) => index);
-      completedIndices.clear();
-    }
-    int randomIndex = random.nextInt(notCompletedIndices.length);
-    return notCompletedIndices[randomIndex];
-  }
-
-  // 保存进度到 SharedPreferences
-  Future<void> _saveProgress() async {
-    final prefs = await SharedPreferences.getInstance();
-    // 将 completedIndices 保存为字符串列表
-    await prefs.setStringList(
-      'completedIndices',
-      completedIndices.map((e) => e.toString()).toList(),
-    );
-    await prefs.setInt('currentQuestionIndex', _currentQuestionIndex);
-  }
-
-  // 从 SharedPreferences 加载进度
-  Future<void> _loadProgress() async {
-    final prefs = await SharedPreferences.getInstance();
-    final completedList = prefs.getStringList('completedIndices') ?? [];
-    completedIndices.clear();
-    completedIndices.addAll(completedList
-        .map((e) => int.tryParse(e) ?? -1)
-        .where((element) => element != -1));
-    _currentQuestionIndex =
-        prefs.getInt('currentQuestionIndex') ?? _pickRandomQuestionIndex();
-    // 计算未完成的题目索引
-    notCompletedIndices =
-        List.generate(sampleQuestions.length, (index) => index)
-            .where((index) => !completedIndices.contains(index))
-            .toList();
-  }
-
   @override
   void initState() {
     super.initState();
     // 默认选中第三个选项（索引从0开始）
     _selectedOption = _options[2];
     // _currentQuestionIndex = random.nextInt(36);
-    notCompletedIndices =
-        List.generate(sampleQuestions.length, (index) => index);
-    if (!notCompletedIndices.contains(_currentQuestionIndex)) {
-      _currentQuestionIndex = _pickRandomQuestionIndex();
-    }
     setState(() {});
   }
 
@@ -185,25 +126,8 @@ class QuizScreenState extends State<QuizScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // 如果进度未加载好，则显示加载指示器
-    if (sampleQuestions.isEmpty || notCompletedIndices.isEmpty) {
-      return Scaffold(
-        appBar: AppBar(title: const Text("Quiz")),
-        body: const Center(child: CircularProgressIndicator()),
-      );
-    }
     // final question = sampleQuestions[_currentQuestionIndex];
-    this._question = sampleQuestions[_currentQuestionIndex];
-    final question = this._question;
-
-    _correctAnswer = question.answer;
-
     return Scaffold(
-      appBar: AppBar(
-        // 进度显示 (已完成 / 总数)
-        title:
-            Text("进度 (${completedIndices.length}/${sampleQuestions.length})"),
-      ),
       body: ListView(
         children: [
           // 代码编辑器
@@ -211,7 +135,7 @@ class QuizScreenState extends State<QuizScreen> {
             // color: Colors.blue,
             width: double.infinity,
             padding: EdgeInsets.all(4),
-            child: RustCodeView(code: question.codeSnippet),
+            child: RustCodeView(code: _qm.getQuestion().codeSnippet),
           ),
           SizedBox(height: 8),
           // 选项
@@ -283,8 +207,7 @@ class QuizScreenState extends State<QuizScreen> {
                   ElevatedButton(
                     onPressed: () {
                       setState(() {
-                        _currentQuestionIndex = _pickRandomQuestionIndex();
-                        _saveProgress(); // 同样保存当前题目索引
+                        _qm.skipQuestion();
                         _giveUpCount = 3;
                         _controller.clear();
                         _showHint = false;
@@ -356,7 +279,7 @@ class QuizScreenState extends State<QuizScreen> {
               )),
           SizedBox(height: 8),
           // 解释信息
-          if (_showHint) ToggleTextBox(text: question.hint)
+          if (_showHint) ToggleTextBox(text: _qm.getQuestion().hint)
         ],
       ),
     );
