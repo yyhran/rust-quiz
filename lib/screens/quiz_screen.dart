@@ -6,6 +6,7 @@ import '../data/questions.dart';
 import '../widgets/code_editor.dart';
 import '../widgets/dropdown.dart';
 import '../widgets/hint.dart';
+import '../widgets/quiz_button.dart';
 import 'explanation_screen.dart';
 import '../models/question.dart';
 
@@ -38,15 +39,11 @@ class QuizScreenState extends State<QuizScreen> {
     print("userAnster: $userAnswer");
     if (userAnswer.trim().toLowerCase() ==
         _qm.getQuestion().answer.trim().toLowerCase()) {
-      // 答案正确，跳转到下一个页面（这里仅做示例，实际可根据需求实现）
-      // Navigator.push(context, MaterialPageRoute(builder: (context) => NextPage()));
       _showExplanation();
     } else {
       // 答案错误，弹出提示
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text("答案错误"), duration: Duration(seconds: 1) // 设置显示时间为2秒
-            ),
+        SnackBar(content: Text("Error!"), duration: Duration(seconds: 1)),
       );
       if (_giveUpCount > 0) {
         setState(() {
@@ -88,6 +85,13 @@ class QuizScreenState extends State<QuizScreen> {
     }
   }
 
+  void _resetPageState() {
+    _giveUpCount = 3;
+    _controller.clear();
+    _showHint = false;
+    FocusScope.of(context).unfocus();
+  }
+
   void _showExplanation() async {
     // 跳转到 ExplanationScreen，并等待返回的新题目
     final newQuestion = await Navigator.push<int>(
@@ -96,15 +100,11 @@ class QuizScreenState extends State<QuizScreen> {
         builder: (context) => ExplanationScreen(question: _qm.getQuestion()),
       ),
     );
-    // 如果有返回值，则更新题目
-    if (newQuestion != null) {
-      setState(() {
-        _qm.nextQuestion();
 
-        _giveUpCount = 3;
-        _controller.clear();
-        _showHint = false;
-        FocusScope.of(context).unfocus();
+    if (newQuestion != null) {
+      await _qm.nextQuestion();
+      setState(() {
+        _resetPageState();
       });
     }
   }
@@ -175,7 +175,6 @@ class QuizScreenState extends State<QuizScreen> {
                   ),
                 ),
                 const SizedBox(width: 8),
-                // 圆形按钮，按钮上有√图标
                 ElevatedButton(
                   onPressed: () {
                     _submitOption();
@@ -198,85 +197,51 @@ class QuizScreenState extends State<QuizScreen> {
           SizedBox(height: 8),
           // 操作按钮
           Container(
-              // color: Colors.blue,
-              width: double.infinity,
-              padding: EdgeInsets.all(4),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        _qm.skipQuestion();
-                        _giveUpCount = 3;
-                        _controller.clear();
-                        _showHint = false;
-                        FocusScope.of(context).unfocus();
-                      });
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 50, 50, 50),
-                      minimumSize: const Size(100, 30),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
-                    ),
-                    child: const Text(
-                      "SKIP",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () async {
-                      // 添加 async 关键字
-                      if (_giveUpCount > 0) {
-                        await showDialog(
-                          context: context,
-                          builder: (BuildContext context) {
-                            return AlertDialog(
-                              title: const Text('提示'),
-                              content: Text('请先尝试三次再放弃（剩余尝试次数：$_giveUpCount）'),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.of(context).pop(),
-                                  child: const Text('确定'),
-                                ),
-                              ],
-                            );
-                          },
-                        );
-                      } else {
-                        _handleGiveUp();
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 50, 50, 50),
-                      minimumSize: const Size(100, 30),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
-                    ),
-                    child: Text(
-                      _giveUpCount > 0 ? "GIVE UP($_giveUpCount)" : "GIVE UP",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: _confirmHint,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color.fromARGB(255, 50, 50, 50),
-                      minimumSize: const Size(100, 30),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.zero,
-                      ),
-                    ),
-                    child: const Text(
-                      "HINT",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ],
-              )),
+            width: double.infinity,
+            padding: const EdgeInsets.all(4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                QuizButton(
+                  text: "SKIP",
+                  onPressed: () async {
+                    await _qm.skipQuestion();
+                    setState(() {
+                      _resetPageState();
+                    });
+                  },
+                ),
+                QuizButton(
+                  text: _giveUpCount > 0 ? "GIVE UP($_giveUpCount)" : "GIVE UP",
+                  onPressed: () async {
+                    if (_giveUpCount > 0) {
+                      await showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('提示'),
+                            content: Text('请先尝试三次再放弃（剩余尝试次数：$_giveUpCount）'),
+                            actions: [
+                              TextButton(
+                                onPressed: () => Navigator.of(context).pop(),
+                                child: const Text('确定'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else {
+                      _handleGiveUp();
+                    }
+                  },
+                ),
+                QuizButton(
+                  text: "HINT",
+                  onPressed: _confirmHint,
+                ),
+              ],
+            ),
+          ),
           SizedBox(height: 8),
           // 解释信息
           if (_showHint) ToggleTextBox(text: _qm.getQuestion().hint)

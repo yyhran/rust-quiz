@@ -33,19 +33,17 @@ class QuestionManager extends ChangeNotifier {
     return _questions[_currentIndex];
   }
 
-  void skipQuestion() {
+  Future<void> skipQuestion() async {
     _currentIndex = _pickRandomQuestionIndex();
-    _saveProgress();
+    await _saveProgress();
   }
 
-  void nextQuestion() {
+  Future<void> nextQuestion() async {
     _completed.add(_currentIndex);
     _notCompleted.remove(_currentIndex);
     _currentIndex = _pickRandomQuestionIndex();
-    _saveProgress();
+    await _saveProgress();
   }
-
-  void summitQuestion() {}
 
   Future<List<Question>> loadQuestions() async {
     final String jsonString =
