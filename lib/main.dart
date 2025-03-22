@@ -43,8 +43,12 @@ void main() async {
   await QuestionManager().initializeQuestions(); // 加载题目数据
 
   runApp(
-    ChangeNotifierProvider(
-      create: (context) => AppState()..loadThemePreference(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+            create: (context) => AppState()..loadThemePreference()),
+        ChangeNotifierProvider(create: (context) => QuestionManager()),
+      ],
       child: const MyApp(),
     ),
   );
@@ -80,7 +84,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
           themeMode: appState.themeMode,
-          home: const QuizHome(),
+          home: const QuizHomePage(),
         );
       },
     );
@@ -89,14 +93,14 @@ class MyApp extends StatelessWidget {
 
 // 主页导航框架
 // class QuizHomePage extends StatelessWidget {
-class QuizHome extends StatefulWidget {
-  const QuizHome({super.key});
+class QuizHomePage extends StatefulWidget {
+  const QuizHomePage({super.key});
 
   @override
-  QuizHomePage createState() => QuizHomePage();
+  _QuizHomePage createState() => _QuizHomePage();
 }
 
-class QuizHomePage extends State<QuizHome> {
+class _QuizHomePage extends State<QuizHomePage> {
   // const QuizHomePage({super.key});
   final qm = QuestionManager();
 
@@ -104,8 +108,10 @@ class QuizHomePage extends State<QuizHome> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:
-            Text('RustQuiz (${qm.completed.length}/${qm.notCompleted.length})'),
+        title: Consumer<QuestionManager>(builder: (context, qm, child) {
+          return Text(
+              'RustQuiz #${qm.currentIndex} (${qm.completed.length}/${qm.questions.length})');
+        }),
         actions: [
           IconButton(
             icon: Icon(
