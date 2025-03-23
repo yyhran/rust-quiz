@@ -2,7 +2,10 @@
 
 Rust Quiz App for Android
 
-The source of quiz is https://github.com/dtolnay/rust-quiz
+ ## Attribution Notice
+The quiz questions are derived from the [Rust Quiz](https://github.com/dtolnay/rust-quiz).
+
+This application's interface design is based on the UI structure of [CppQuiz](https://github.com/vsklamm/CppQuiz).
 
 ## Getting Started
 
