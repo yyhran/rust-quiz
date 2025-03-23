@@ -112,9 +112,7 @@ class QuizScreenState extends State<QuizScreen> {
   @override
   void initState() {
     super.initState();
-    // 默认选中第三个选项（索引从0开始）
     _selectedOption = _options[2];
-    // _currentQuestionIndex = random.nextInt(36);
     setState(() {});
   }
 
@@ -135,7 +133,9 @@ class QuizScreenState extends State<QuizScreen> {
             // color: Colors.blue,
             width: double.infinity,
             padding: EdgeInsets.all(4),
-            child: RustCodeView(code: _qm.getQuestion().codeSnippet),
+            child: RustCodeView(
+                code: _qm.getQuestion().codeSnippet,
+                difficulty: _qm.getQuestion().difficulty),
           ),
           SizedBox(height: 8),
           // 选项
@@ -180,8 +180,7 @@ class QuizScreenState extends State<QuizScreen> {
                     _submitOption();
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:
-                        Color.fromARGB(255, 49, 110, 138), // 设置按钮的背景色为淡蓝色
+                    backgroundColor: Color.fromARGB(255, 49, 110, 138),
                     shape: const CircleBorder(),
                     padding: const EdgeInsets.all(4),
                   ),
