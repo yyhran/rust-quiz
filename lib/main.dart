@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import 'data/questions.dart';
+import 'data/questions_manager.dart';
 import 'screens/quiz_screen.dart';
 
 // 应用状态管理（包含主题模式）

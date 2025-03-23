@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../data/questions.dart';
+import '../data/questions_manager.dart';
 import '../widgets/code_editor.dart';
 import '../widgets/dropdown.dart';
 import '../widgets/hint.dart';
@@ -49,8 +49,30 @@ class QuizScreenState extends State<QuizScreen> {
     }
   }
 
-  void _handleGiveUp() {
-    _showExplanation();
+  void _handleGiveUp() async {
+    if (_giveUpCount > 0) {
+      await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            insetPadding:
+                const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+            content: Text(
+              'Please try three times before giving up (remaining attempts: $_giveUpCount)',
+              style: const TextStyle(fontSize: 16),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(),
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      _showExplanation();
+    }
   }
 
   Future<void> _confirmHint() async {
@@ -98,7 +120,7 @@ class QuizScreenState extends State<QuizScreen> {
     );
 
     if (newQuestion != null) {
-      await _qm.nextQuestion();
+      _qm.nextQuestion();
       setState(() {
         _resetPageState();
       });
@@ -121,6 +143,9 @@ class QuizScreenState extends State<QuizScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text(_qm.getQuestion().title.replaceAll('-', ' ')),
+      ),
       body: ListView(
         children: [
           // 代码编辑器
@@ -194,8 +219,8 @@ class QuizScreenState extends State<QuizScreen> {
               children: [
                 QuizButton(
                   text: "SKIP",
-                  onPressed: () async {
-                    await _qm.skipQuestion();
+                  onPressed: () {
+                    _qm.skipQuestion();
                     setState(() {
                       _resetPageState();
                     });
@@ -203,31 +228,7 @@ class QuizScreenState extends State<QuizScreen> {
                 ),
                 QuizButton(
                   text: _giveUpCount > 0 ? "GIVE UP($_giveUpCount)" : "GIVE UP",
-                  onPressed: () async {
-                    if (_giveUpCount > 0) {
-                      await showDialog(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            insetPadding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 4),
-                            content: Text(
-                              'Please try three times before giving up (remaining attempts: $_giveUpCount)',
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () => Navigator.of(context).pop(),
-                                child: const Text('OK'),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    } else {
-                      _handleGiveUp();
-                    }
-                  },
+                  onPressed: _handleGiveUp,
                 ),
                 QuizButton(
                   text: "HINT",

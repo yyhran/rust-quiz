@@ -19,6 +19,7 @@ class QuestionManager extends ChangeNotifier {
   int _currentIndex = 0;
   List<Question> _questions = [];
   final Set<int> _completed = {};
+  final Set<int> _favourites = {};
   List<int> _notCompleted = [];
 
   int get currentIndex => _currentIndex;
@@ -32,15 +33,26 @@ class QuestionManager extends ChangeNotifier {
     return _questions[_currentIndex];
   }
 
-  Future<void> skipQuestion() async {
+  void skipQuestion() async {
     _currentIndex = _pickRandomQuestionIndex();
     await _saveProgress();
   }
 
-  Future<void> nextQuestion() async {
+  void nextQuestion() async {
     _completed.add(_currentIndex);
     _notCompleted.remove(_currentIndex);
     _currentIndex = _pickRandomQuestionIndex();
+    await _saveProgress();
+  }
+
+  bool currentFavourite() => _favourites.contains(_currentIndex);
+  void addFavourite() async {
+    _favourites.add(_currentIndex);
+    await _saveProgress();
+  }
+
+  void removeFavourite() async {
+    _favourites.remove(_currentIndex);
     await _saveProgress();
   }
 
@@ -70,6 +82,10 @@ class QuestionManager extends ChangeNotifier {
       'completed',
       _completed.map((e) => e.toString()).toList(),
     );
+    await prefs.setStringList(
+      'favourites',
+      _favourites.map((e) => e.toString()).toList(),
+    );
     await prefs.setInt('currentIndex', _currentIndex);
     notifyListeners();
   }
@@ -83,6 +99,10 @@ class QuestionManager extends ChangeNotifier {
         .map((e) => int.tryParse(e) ?? -1)
         .where((element) => element != -1));
     _currentIndex = prefs.getInt('currentIndex') ?? _pickRandomQuestionIndex();
+    final favouritesList = prefs.getStringList('favourites') ?? [];
+    _favourites.clear();
+    _favourites.addAll(
+        favouritesList.map((e) => int.tryParse(e) ?? -1).where((e) => e != -1));
     // 计算未完成的题目索引
     _notCompleted = List.generate(_questions.length, (index) => index)
         .where((index) => !_completed.contains(index))
