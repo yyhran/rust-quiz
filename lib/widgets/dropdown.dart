@@ -6,7 +6,7 @@ class QuizDropdown extends StatefulWidget {
   final List<String> options;
 
   const QuizDropdown({
-    Key? key,
+    super.key,
     required this.selectedValue,
     required this.onChanged,
     this.options = const [
@@ -14,17 +14,17 @@ class QuizDropdown extends StatefulWidget {
       'The program does not compile',
       'The program is guaranteed to output:'
     ],
-  }) : super(key: key);
+  });
 
   @override
-  _QuizDropdownState createState() => _QuizDropdownState();
+  QuizDropdownState createState() => QuizDropdownState();
 }
 
-class _QuizDropdownState extends State<QuizDropdown> {
+class QuizDropdownState extends State<QuizDropdown> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: Color.fromARGB(255, 50, 50, 50),
+      color: const Color.fromARGB(255, 50, 50, 50),
       // padding: EdgeInsets.symmetric(horizontal: 2),
       padding:
           const EdgeInsets.only(top: 4.0, bottom: 4.0, left: 4.0, right: 16.0),

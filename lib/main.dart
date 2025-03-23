@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/foundation.dart'; // 用于 ChangeNotifier
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'data/questions.dart';
-import 'models/question.dart';
 import 'screens/quiz_screen.dart';
-import 'widgets/code_editor.dart';
 
 // 应用状态管理（包含主题模式）
 class AppState extends ChangeNotifier {
@@ -34,12 +31,6 @@ class AppState extends ChangeNotifier {
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // 初始化本地存储
-  final prefs = await SharedPreferences.getInstance();
-
-  // 如果有需要可以在这里初始化其他服务（如 Hive）
-  // await Hive.initFlutter();
-
   await QuestionManager().initializeQuestions(); // 加载题目数据
 
   runApp(
@@ -62,7 +53,6 @@ class MyApp extends StatelessWidget {
     return Consumer<AppState>(
       builder: (context, appState, child) {
         return MaterialApp(
-          title: 'Flutter Quiz',
           debugShowCheckedModeBanner: false,
           theme: ThemeData.light().copyWith(
             primaryColor: Colors.blue[800],
@@ -92,15 +82,14 @@ class MyApp extends StatelessWidget {
 }
 
 // 主页导航框架
-// class QuizHomePage extends StatelessWidget {
 class QuizHomePage extends StatefulWidget {
   const QuizHomePage({super.key});
 
   @override
-  _QuizHomePage createState() => _QuizHomePage();
+  QuizHomePageState createState() => QuizHomePageState();
 }
 
-class _QuizHomePage extends State<QuizHomePage> {
+class QuizHomePageState extends State<QuizHomePage> {
   // const QuizHomePage({super.key});
   final qm = QuestionManager();
 
@@ -123,7 +112,7 @@ class _QuizHomePage extends State<QuizHomePage> {
           ),
         ],
       ),
-      body: QuizScreen(), // 主答题界面
+      body: const QuizScreen(), // 主答题界面
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -132,15 +121,11 @@ class _QuizHomePage extends State<QuizHomePage> {
               decoration: BoxDecoration(
                 color: Colors.blue,
               ),
-              child: Text('功能菜单'),
+              child: Text('Menu'),
             ),
             ListTile(
-              title: const Text('答题进度'),
-              onTap: () {/* 导航到进度页面 */},
-            ),
-            ListTile(
-              title: const Text('错题本'),
-              onTap: () {/* 导航到错题本页面 */},
+              title: const Text('Favourites'),
+              onTap: () {/* 导航到收藏页面 */},
             ),
           ],
         ),

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
@@ -10,13 +8,7 @@ import '../models/question.dart';
 class ExplanationScreen extends StatelessWidget {
   final Question question;
 
-  const ExplanationScreen({Key? key, required this.question}) : super(key: key);
-
-  // 模拟获取新问题的异步方法
-  Future<int> _fetchNewQuestion() async {
-    final random = Random();
-    return random.nextInt(36);
-  }
+  const ExplanationScreen({super.key, required this.question});
 
   @override
   Widget build(BuildContext context) {
@@ -66,9 +58,8 @@ class ExplanationScreen extends StatelessWidget {
           Center(
             child: TextButton(
               onPressed: () async {
-                final newQuestion = await _fetchNewQuestion();
-                // 返回新问题到上一级页面（QuizScreenState）
-                Navigator.pop(context, newQuestion);
+                // 返回到上一级页面（QuizScreenState）
+                Navigator.pop(context, 1);
               },
               child: const Text(
                 "Next Question",

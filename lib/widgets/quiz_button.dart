@@ -17,7 +17,7 @@ class QuizButton extends StatelessWidget {
       style: ElevatedButton.styleFrom(
         backgroundColor: const Color.fromARGB(255, 50, 50, 50),
         minimumSize: const Size(100, 30),
-        shape: RoundedRectangleBorder(
+        shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.zero,
         ),
       ),

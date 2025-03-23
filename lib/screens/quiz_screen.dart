@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data/questions.dart';
 import '../widgets/code_editor.dart';
@@ -8,7 +6,6 @@ import '../widgets/dropdown.dart';
 import '../widgets/hint.dart';
 import '../widgets/quiz_button.dart';
 import 'explanation_screen.dart';
-import '../models/question.dart';
 
 class QuizScreen extends StatefulWidget {
   const QuizScreen({super.key});
@@ -21,7 +18,7 @@ class QuizScreenState extends State<QuizScreen> {
   bool _showHint = false;
   int _giveUpCount = 3;
   String? _selectedOption;
-  var _qm = QuestionManager();
+  final _qm = QuestionManager();
   final TextEditingController _controller = TextEditingController();
   final List<String> _options = [
     'The program exhibits undefined behavior',
@@ -36,14 +33,13 @@ class QuizScreenState extends State<QuizScreen> {
         ? _controller.text
         : _selectedOption ?? "";
 
-    print("userAnster: $userAnswer");
     if (userAnswer.trim().toLowerCase() ==
         _qm.getQuestion().answer.trim().toLowerCase()) {
       _showExplanation();
     } else {
       // 答案错误，弹出提示
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("Error!"), duration: Duration(seconds: 1)),
+        const SnackBar(content: Text("Error!"), duration: Duration(seconds: 1)),
       );
       if (_giveUpCount > 0) {
         setState(() {
@@ -124,25 +120,22 @@ class QuizScreenState extends State<QuizScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // final question = sampleQuestions[_currentQuestionIndex];
     return Scaffold(
       body: ListView(
         children: [
           // 代码编辑器
           Container(
-            // color: Colors.blue,
             width: double.infinity,
-            padding: EdgeInsets.all(4),
+            padding: const EdgeInsets.all(4),
             child: RustCodeView(
                 code: _qm.getQuestion().codeSnippet,
                 difficulty: _qm.getQuestion().difficulty),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           // 选项
           Container(
-            // color: Colors.green,
             width: double.infinity,
-            padding: EdgeInsets.all(8),
+            padding: const EdgeInsets.all(8),
             child: QuizDropdown(
                 options: _options,
                 selectedValue: _selectedOption,
@@ -152,13 +145,11 @@ class QuizScreenState extends State<QuizScreen> {
                   });
                 }),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
 
           // 输入
           Container(
-            // color: Colors.red,
             width: double.infinity,
-            // padding: EdgeInsets.all(16),
             padding: const EdgeInsets.only(top: 4.0, bottom: 4.0, left: 8.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -167,7 +158,7 @@ class QuizScreenState extends State<QuizScreen> {
                 Expanded(
                   child: TextField(
                     controller: _controller,
-                    decoration: InputDecoration(
+                    decoration: const InputDecoration(
                       hintText: 'result',
                       // 只显示下划线
                       border: UnderlineInputBorder(),
@@ -180,7 +171,7 @@ class QuizScreenState extends State<QuizScreen> {
                     _submitOption();
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color.fromARGB(255, 49, 110, 138),
+                    backgroundColor: const Color.fromARGB(255, 49, 110, 138),
                     shape: const CircleBorder(),
                     padding: const EdgeInsets.all(4),
                   ),
@@ -193,7 +184,7 @@ class QuizScreenState extends State<QuizScreen> {
               ],
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           // 操作按钮
           Container(
             width: double.infinity,
@@ -218,12 +209,16 @@ class QuizScreenState extends State<QuizScreen> {
                         context: context,
                         builder: (BuildContext context) {
                           return AlertDialog(
-                            title: const Text('提示'),
-                            content: Text('请先尝试三次再放弃（剩余尝试次数：$_giveUpCount）'),
+                            insetPadding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 4),
+                            content: Text(
+                              'Please try three times before giving up (remaining attempts: $_giveUpCount)',
+                              style: const TextStyle(fontSize: 16),
+                            ),
                             actions: [
                               TextButton(
                                 onPressed: () => Navigator.of(context).pop(),
-                                child: const Text('确定'),
+                                child: const Text('OK'),
                               ),
                             ],
                           );
@@ -241,7 +236,7 @@ class QuizScreenState extends State<QuizScreen> {
               ],
             ),
           ),
-          SizedBox(height: 8),
+          const SizedBox(height: 8),
           // 解释信息
           if (_showHint) ToggleTextBox(text: _qm.getQuestion().hint)
         ],
