@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
+import 'package:rustquiz/widgets/quiz_markdown.dart';
 
 class ToggleTextBox extends StatefulWidget {
   final String text;
@@ -22,8 +22,7 @@ class ToggleTextBoxState extends State<ToggleTextBox> {
   @override
   Widget build(BuildContext context) {
     return Container(
-      color: const Color.fromARGB(255, 182, 164, 0),
-      // 如果需要整体边距可以加上padding
+      color: Colors.yellow.shade100,
       padding: const EdgeInsets.all(8.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -58,16 +57,11 @@ class ToggleTextBoxState extends State<ToggleTextBox> {
           Visibility(
             visible: _isTextVisible,
             child: Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              child: MarkdownBody(
-                data: widget.text,
-                styleSheet: MarkdownStyleSheet(
-                  p: const TextStyle(fontSize: 16, color: Colors.black),
-                ),
-              ),
-            ),
-          )
+                width: double.infinity,
+                padding: const EdgeInsets.all(12),
+                child:
+                    QuizMarkdown(data: widget.text, color: Colors.transparent)),
+          ),
         ],
       ),
     );

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/github.dart';
+import 'package:rustquiz/widgets/quiz_markdown.dart';
 
 import '../models/question.dart';
 
@@ -43,16 +43,7 @@ class ExplanationScreen extends StatelessWidget {
           ),
           const SizedBox(height: 16),
           // 第三部分：使用 Markdown 显示解释信息
-          Container(
-            color: Colors.yellow.shade50,
-            padding: const EdgeInsets.all(12),
-            child: MarkdownBody(
-              data: question.explanation,
-              styleSheet: MarkdownStyleSheet(
-                p: const TextStyle(fontSize: 16, color: Colors.black87),
-              ),
-            ),
-          ),
+          QuizMarkdown(data: question.explanation),
           const SizedBox(height: 16),
           // 第四部分：文本按钮，点击后获取新题并返回 QuizScreenState
           Center(
