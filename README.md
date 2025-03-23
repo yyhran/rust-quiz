@@ -1,6 +1,8 @@
 # rustquiz
 
-A new Flutter project.
+Rust Quiz App for Android
+
+The source of quiz is https://github.com/dtolnay/rust-quiz
 
 ## Getting Started
 
