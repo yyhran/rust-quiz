@@ -11,7 +11,8 @@ class AppState extends ChangeNotifier {
 
   bool get isDarkMode => _isDarkMode;
 
-  ThemeMode get themeMode => _isDarkMode ? ThemeMode.dark : ThemeMode.light;
+  // ThemeMode get themeMode => _isDarkMode ? ThemeMode.dark : ThemeMode.light;
+  ThemeMode get themeMode => ThemeMode.dark;
 
   void toggleTheme() async {
     _isDarkMode = !_isDarkMode;
