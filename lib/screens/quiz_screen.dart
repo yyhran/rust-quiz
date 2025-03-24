@@ -20,6 +20,7 @@ class QuizScreenState extends State<QuizScreen> {
   String? _selectedOption;
   final _qm = QuestionManager();
   final TextEditingController _controller = TextEditingController();
+  final FocusNode _focusNode = FocusNode();
   final List<String> _options = [
     'The program exhibits undefined behavior',
     'The program does not compile',
@@ -106,6 +107,7 @@ class QuizScreenState extends State<QuizScreen> {
   void resetPageState() {
     _giveUpCount = 3;
     _controller.clear();
+    _focusNode.unfocus();
     _showHint = false;
     FocusScope.of(context).unfocus();
   }
@@ -183,6 +185,7 @@ class QuizScreenState extends State<QuizScreen> {
                 Expanded(
                   child: TextField(
                     controller: _controller,
+                    focusNode: _focusNode,
                     decoration: const InputDecoration(
                       hintText: 'result',
                       // 只显示下划线
