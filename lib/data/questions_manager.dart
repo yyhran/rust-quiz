@@ -18,19 +18,22 @@ class QuestionManager extends ChangeNotifier {
 
   int _currentIndex = 0;
   List<Question> _questions = [];
-  final Set<int> _completed = {};
   final Set<int> _favourites = {};
+  final Set<int> _completed = {};
   List<int> _notCompleted = [];
 
   int get currentIndex => _currentIndex;
   UnmodifiableListView<Question> get questions =>
       UnmodifiableListView(_questions);
+  UnmodifiableListView<int> get favourites => UnmodifiableListView(_favourites);
   UnmodifiableListView<int> get completed => UnmodifiableListView(_completed);
   UnmodifiableListView<int> get notCompleted =>
       UnmodifiableListView(_notCompleted);
 
-  Question getQuestion() {
-    return _questions[_currentIndex];
+  Question getQuestion() => _questions[_currentIndex];
+
+  void setCurrentIndex(int index) {
+    _currentIndex = index;
   }
 
   void skipQuestion() async {
@@ -46,6 +49,7 @@ class QuestionManager extends ChangeNotifier {
   }
 
   bool currentFavourite() => _favourites.contains(_currentIndex);
+
   void addFavourite() async {
     _favourites.add(_currentIndex);
     await _saveProgress();

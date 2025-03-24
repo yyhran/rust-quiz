@@ -103,7 +103,7 @@ class QuizScreenState extends State<QuizScreen> {
     }
   }
 
-  void _resetPageState() {
+  void resetPageState() {
     _giveUpCount = 3;
     _controller.clear();
     _showHint = false;
@@ -122,7 +122,7 @@ class QuizScreenState extends State<QuizScreen> {
     if (newQuestion != null) {
       _qm.nextQuestion();
       setState(() {
-        _resetPageState();
+        resetPageState();
       });
     }
   }
@@ -222,7 +222,7 @@ class QuizScreenState extends State<QuizScreen> {
                   onPressed: () {
                     _qm.skipQuestion();
                     setState(() {
-                      _resetPageState();
+                      resetPageState();
                     });
                   },
                 ),

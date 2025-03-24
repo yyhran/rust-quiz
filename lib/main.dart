@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:rustquiz/screens/favourite_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'data/questions_manager.dart';
@@ -91,8 +92,21 @@ class QuizHomePage extends StatefulWidget {
 }
 
 class QuizHomePageState extends State<QuizHomePage> {
-  // const QuizHomePage({super.key});
+  final GlobalKey<QuizScreenState> quizScreenKey = GlobalKey<QuizScreenState>();
   final qm = QuestionManager();
+
+  // 打开收藏页面
+  Future<void> _openFavourites() async {
+    final selectedIndex = await Navigator.push<int>(
+      context,
+      MaterialPageRoute(builder: (context) => const FavouriteScreen()),
+    );
+    if (selectedIndex != null) {
+      setState(() {
+        quizScreenKey.currentState!.resetPageState();
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -113,7 +127,9 @@ class QuizHomePageState extends State<QuizHomePage> {
           ),
         ],
       ),
-      body: const QuizScreen(), // 主答题界面
+      body: QuizScreen(
+        key: quizScreenKey,
+      ), // 主答题界面
       drawer: Drawer(
         child: ListView(
           padding: EdgeInsets.zero,
@@ -126,7 +142,10 @@ class QuizHomePageState extends State<QuizHomePage> {
             ),
             ListTile(
               title: const Text('Favourites'),
-              onTap: () {/* 导航到收藏页面 */},
+              onTap: () {
+                Navigator.pop(context);
+                _openFavourites();
+              },
             ),
           ],
         ),
