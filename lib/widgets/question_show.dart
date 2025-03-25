@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_highlight/flutter_highlight.dart';
-import 'package:flutter_highlight/themes/github.dart';
 import 'package:rustquiz/data/questions_manager.dart';
+import 'package:rustquiz/widgets/code_view.dart';
 import 'package:rustquiz/widgets/difficulty_indicator.dart';
 
-class RustCodeView extends StatefulWidget {
+class QuestionShow extends StatefulWidget {
   final String code;
   final int difficulty;
 
-  const RustCodeView({super.key, required this.difficulty, required this.code});
+  const QuestionShow({super.key, required this.difficulty, required this.code});
 
   @override
-  RustCodeViewState createState() => RustCodeViewState();
+  QuestionShowState createState() => QuestionShowState();
 }
 
-class RustCodeViewState extends State<RustCodeView> {
+class QuestionShowState extends State<QuestionShow> {
   final _qm = QuestionManager();
 
   @override
@@ -54,19 +53,11 @@ class RustCodeViewState extends State<RustCodeView> {
             ),
           ),
           Container(
-            width: double.infinity,
-            padding: const EdgeInsets.all(12),
-            child: HighlightView(
-              widget.code,
-              language: 'rust',
-              theme: githubTheme,
+              width: double.infinity,
               padding: const EdgeInsets.all(12),
-              textStyle: const TextStyle(
-                fontFamily: 'Source Code Pro',
-                fontSize: 14,
-              ),
-            ),
-          ),
+              child: RustCodeView(
+                code: widget.code,
+              )),
         ]));
   }
 }

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_highlight/flutter_highlight.dart';
-import 'package:flutter_highlight/themes/github.dart';
 import 'package:rustquiz/data/questions_manager.dart';
+import 'package:rustquiz/widgets/code_view.dart';
 
 class FavouritePage extends StatelessWidget {
   const FavouritePage({super.key});
@@ -51,16 +50,7 @@ class FavouritePage extends StatelessWidget {
               ),
               subtitle: SizedBox(
                 width: double.infinity,
-                child: HighlightView(
-                  codePreview,
-                  language: 'rust',
-                  theme: githubTheme,
-                  padding: const EdgeInsets.all(12),
-                  textStyle: const TextStyle(
-                    fontFamily: 'Source Code Pro',
-                    fontSize: 12,
-                  ),
-                ),
+                child: RustCodeView(code: codePreview),
               ),
               onTap: () {
                 qm.setCurrentIndex(favouriteIndices[index]);

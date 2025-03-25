@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../data/questions_manager.dart';
-import '../widgets/code_editor.dart';
+import '../widgets/question_show.dart';
 import '../widgets/dropdown.dart';
 import '../widgets/hint.dart';
 import '../widgets/quiz_button.dart';
@@ -154,7 +154,7 @@ class QuizPageState extends State<QuizPage> {
           Container(
             width: double.infinity,
             padding: const EdgeInsets.all(4),
-            child: RustCodeView(
+            child: QuestionShow(
                 code: _qm.getQuestion().codeSnippet,
                 difficulty: _qm.getQuestion().difficulty),
           ),
