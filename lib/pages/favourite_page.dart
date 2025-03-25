@@ -3,8 +3,8 @@ import 'package:flutter_highlight/flutter_highlight.dart';
 import 'package:flutter_highlight/themes/github.dart';
 import 'package:rustquiz/data/questions_manager.dart';
 
-class FavouriteScreen extends StatelessWidget {
-  const FavouriteScreen({super.key});
+class FavouritePage extends StatelessWidget {
+  const FavouritePage({super.key});
 
   String _getCodePreview(String code) {
     List<String> lines = code.split('\n');

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:rustquiz/screens/favourite_screen.dart';
+import 'package:rustquiz/pages/favourite_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import 'data/questions_manager.dart';
-import 'screens/quiz_screen.dart';
+import 'pages/quiz_page.dart';
 
 // 应用状态管理（包含主题模式）
 class AppState extends ChangeNotifier {
@@ -92,18 +92,18 @@ class QuizHomePage extends StatefulWidget {
 }
 
 class QuizHomePageState extends State<QuizHomePage> {
-  final GlobalKey<QuizScreenState> quizScreenKey = GlobalKey<QuizScreenState>();
+  final GlobalKey<QuizPageState> _quizPageKey = GlobalKey<QuizPageState>();
   final qm = QuestionManager();
 
   // 打开收藏页面
   Future<void> _openFavourites() async {
     final selectedIndex = await Navigator.push<int>(
       context,
-      MaterialPageRoute(builder: (context) => const FavouriteScreen()),
+      MaterialPageRoute(builder: (context) => const FavouritePage()),
     );
     if (selectedIndex != null) {
       setState(() {
-        quizScreenKey.currentState!.resetPageState();
+        _quizPageKey.currentState!.resetPageState();
       });
     }
   }
@@ -127,8 +127,8 @@ class QuizHomePageState extends State<QuizHomePage> {
           ),
         ],
       ),
-      body: QuizScreen(
-        key: quizScreenKey,
+      body: QuizPage(
+        key: _quizPageKey,
       ), // 主答题界面
       drawer: Drawer(
         child: ListView(

@@ -5,10 +5,10 @@ import 'package:rustquiz/widgets/quiz_markdown.dart';
 
 import '../models/question.dart';
 
-class ExplanationScreen extends StatelessWidget {
+class ExplanationPage extends StatelessWidget {
   final Question question;
 
-  const ExplanationScreen({super.key, required this.question});
+  const ExplanationPage({super.key, required this.question});
 
   @override
   Widget build(BuildContext context) {

@@ -5,16 +5,16 @@ import '../widgets/code_editor.dart';
 import '../widgets/dropdown.dart';
 import '../widgets/hint.dart';
 import '../widgets/quiz_button.dart';
-import 'explanation_screen.dart';
+import 'explanation_page.dart';
 
-class QuizScreen extends StatefulWidget {
-  const QuizScreen({super.key});
+class QuizPage extends StatefulWidget {
+  const QuizPage({super.key});
 
   @override
-  QuizScreenState createState() => QuizScreenState();
+  QuizPageState createState() => QuizPageState();
 }
 
-class QuizScreenState extends State<QuizScreen> {
+class QuizPageState extends State<QuizPage> {
   bool _showHint = false;
   int _giveUpCount = 3;
   String? _selectedOption;
@@ -113,11 +113,11 @@ class QuizScreenState extends State<QuizScreen> {
   }
 
   void _showExplanation() async {
-    // 跳转到 ExplanationScreen，并等待返回的新题目
+    // 跳转到 ExplanationPage，并等待返回的新题目
     final newQuestion = await Navigator.push<int>(
       context,
       MaterialPageRoute(
-        builder: (context) => ExplanationScreen(question: _qm.getQuestion()),
+        builder: (context) => ExplanationPage(question: _qm.getQuestion()),
       ),
     );
 
