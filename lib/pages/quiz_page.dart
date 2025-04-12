@@ -122,7 +122,7 @@ class QuizPageState extends State<QuizPage> {
     );
 
     if (newQuestion != null) {
-      _qm.nextQuestion();
+      await _qm.nextQuestion();
       setState(() {
         resetPageState();
       });
@@ -222,8 +222,8 @@ class QuizPageState extends State<QuizPage> {
               children: [
                 QuizButton(
                   text: "SKIP",
-                  onPressed: () {
-                    _qm.skipQuestion();
+                  onPressed: () async {
+                    await _qm.skipQuestion();
                     setState(() {
                       resetPageState();
                     });

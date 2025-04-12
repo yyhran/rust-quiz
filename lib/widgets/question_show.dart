@@ -32,14 +32,14 @@ class QuestionShowState extends State<QuestionShow> {
                     style: TextStyle(fontSize: 18)),
                 // const Icon(Icons.star, size: 32, color: Colors.yellow),
                 GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      if (_qm.currentFavourite()) {
-                        _qm.removeFavourite();
-                      } else {
-                        _qm.addFavourite();
-                      }
-                    });
+                  onTap: () async {
+                    if (_qm.currentFavourite()) {
+                      await _qm.removeFavourite();
+                    } else {
+                      await _qm.addFavourite();
+                    }
+
+                    setState(() {});
                   },
                   child: Icon(
                     Icons.star,

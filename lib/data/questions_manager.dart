@@ -36,12 +36,12 @@ class QuestionManager extends ChangeNotifier {
     _currentIndex = index;
   }
 
-  void skipQuestion() async {
+  Future<void> skipQuestion() async {
     _currentIndex = _pickRandomQuestionIndex();
     await _saveProgress();
   }
 
-  void nextQuestion() async {
+  Future<void> nextQuestion() async {
     _completed.add(_currentIndex);
     _notCompleted.remove(_currentIndex);
     _currentIndex = _pickRandomQuestionIndex();
@@ -50,12 +50,12 @@ class QuestionManager extends ChangeNotifier {
 
   bool currentFavourite() => _favourites.contains(_currentIndex);
 
-  void addFavourite() async {
+  Future<void> addFavourite() async {
     _favourites.add(_currentIndex);
     await _saveProgress();
   }
 
-  void removeFavourite() async {
+  Future<void> removeFavourite() async {
     _favourites.remove(_currentIndex);
     await _saveProgress();
   }
