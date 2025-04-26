@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_highlight/flutter_highlight.dart';
-import 'package:flutter_highlight/themes/github.dart';
+import 'package:flutter_syntax_view/flutter_syntax_view.dart';
 
 class RustCodeView extends StatelessWidget {
   final String code;
@@ -8,14 +7,20 @@ class RustCodeView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return HighlightView(
-      code,
-      language: 'rust',
-      theme: githubTheme,
-      padding: const EdgeInsets.all(12),
-      textStyle: const TextStyle(
-        fontFamily: 'Source Code Pro',
-        fontSize: 14,
+    return SizedBox(
+      width: double.infinity,
+      child: SingleChildScrollView(
+        // scrollDirection: Axis.horizontal,
+        child: SyntaxView(
+          code: code,
+          syntax: Syntax.RUST,
+          syntaxTheme: SyntaxTheme.gravityLight(),
+          fontSize: 14.5,
+          withLinesCount: true,
+          withZoom: false,
+          expanded: false,
+          selectable: true,
+        ),
       ),
     );
   }
