@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_highlight/flutter_highlight.dart';
-import 'package:flutter_highlight/themes/github.dart';
 import 'package:rustquiz/widgets/quiz_markdown.dart';
 
 import '../models/question.dart';
+import '../widgets/code_view.dart' show RustCodeView;
 
 class ExplanationPage extends StatelessWidget {
   final Question question;
@@ -20,16 +19,7 @@ class ExplanationPage extends StatelessWidget {
           // 第一部分：显示原始代码（使用 HighlightView）
           Container(
             color: Colors.blue.shade50,
-            child: HighlightView(
-              question.codeSnippet,
-              language: 'rust',
-              theme: githubTheme,
-              padding: const EdgeInsets.all(12),
-              textStyle: const TextStyle(
-                fontFamily: 'Source Code Pro',
-                fontSize: 14,
-              ),
-            ),
+            child: RustCodeView(code: question.codeSnippet),
           ),
           const SizedBox(height: 16),
           // 第二部分：显示正确答案
